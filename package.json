@@ -5,7 +5,8 @@
   "description": "The web framework based on koa 2.x",
   "dependencies": {
     "co": "^4.6.0",
-    "koa": "^2.0.0"
+    "koa": "^2.0.0",
+    "koa-logger": "^2.0.0"
   },
   "repository": {
     "type": "git",
