@@ -1,18 +1,29 @@
+'use strict'
+
+const serverconfig = require('./config.js').SERVER;
+
+const sora = require('./frame_modules/sora.js');
 const koa = require('koa');
 const app = new koa();
 
+const logger = sora.Logger('app.js');
 
+const middlewares = sora.middlewares;
+app.use(middlewares.favicon(__dirname + '/public/favicon.ico'));
+app.use(middlewares.compress());
 
-// 此处开始堆叠各种中间件
-//...
+const router = sora.router;
+app.use(router.routes());
+app.use(router.allowedMethods());
 
+/**
 app.use((ctx, next) => {
     const start = new Date();
     return next().then(() => {
         const ms = new Date() - start;
         console.log('%s %s %sms', ctx.method, ctx.url, ms);
     });
-});
+}); */
 
 /** node.js v4不支持async/await
 app.use(async (ctx, next) => {
@@ -22,15 +33,22 @@ app.use(async (ctx, next) => {
     console.log('%s %s %sms', ctx.method, ctx.url, ms);
 }); */
 
-/** response
+/** response */
 app.use(ctx => {
+
+    console.log(ctx.req.method);
+    console.log(ctx.req.url);
+
     console.log('Hello Koa!');
     ctx.body = 'Hello Koa!';
-}); */
-
-app.use(function *() {
-    var path = this.path;
-    this.body = path;
 });
 
-app.listen(3000);
+app.on('error', function (err, ctx) {
+    console.error("cath exception:" + err);
+});
+
+
+
+app.listen(serverconfig.LISTEN_PORT, function() {
+    logger.info('server listening on port:' + this.address().port);
+});
